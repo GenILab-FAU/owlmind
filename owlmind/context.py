@@ -106,13 +106,13 @@ class Context(dict):
         - Star-matching for *value, value*, *value*
         - Regex-matching for r/regex/
         - Match-score increases the more content is matched
-        """
+        """ 
 
         # CUT-SHORT conditions
-        test.result = None
         if not test or not isinstance(test, Context):
             if Context.DEBUG: print(f'WARNING: Context.__contains__, test must be Context: {type(test)}')
             return False
+        test.result = None
 
         # Processing
         match_score = 0.0
@@ -127,6 +127,7 @@ class Context(dict):
                 local_score = Context.MAX_CLAUSE 
                 target = self[key] if Context.CASE_SENSITIVE else self[key].lower()
                 value_str = isinstance(value, str)
+                # TODO : Look into why we're checking type as a string, just to ignore it and call string method anyways.
                 value = value if value_str and Context.CASE_SENSITIVE else value.lower()
 
                 # (2) Process context-match
@@ -153,8 +154,9 @@ class Context(dict):
 
                 # (2.4) regex matching with r/regex/
                 elif value_str and value.startswith('r/'): 
-                    pattern = value[2:-1] if value.endswith('/') else value[2:0] 
+                    pattern = value[2:-1] if value.endswith('/') else value[2:] 
                     try:
+                        # TODO : Is fullmatch() the intended behavior here, do we want to consider partial matches?
                         if re.fullmatch(pattern, str(target)):
                             # @NOTE arbitrary value for regex-matching
                             local_score += 0.75 
@@ -174,6 +176,7 @@ class Context(dict):
                 break
         ## For-loop-else will happen in case Context-match was not CUT
         ## note: this proves the initial belief to be false
+        # TODO : Remove for-else construct, use flags to be more idiomatic
         else: 
             cut = False 
 

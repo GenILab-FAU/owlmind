@@ -1,0 +1,6 @@
+#
+# Requirements for Owlmind
+
+-r requirements.txt
+pytest
+pytest-cov
